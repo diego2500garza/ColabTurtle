@@ -58,4 +58,7 @@ Here is a demo code:
       right(3)
       n = 5+ i* 5
 
+The output should be like this:
+![Image of turtleoutput](https://github.com/YijiaXiong/ColabTurtle/blob/master/turtleoutput.png).
+
 Have fun drawing!
