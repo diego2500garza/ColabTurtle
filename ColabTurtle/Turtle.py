@@ -40,7 +40,7 @@ TURTLE_SVG_TEMPLATE = """
       </g>
     """
 
-SPEED_TO_SEC_MAP = {1: 1.5, 2: 0.9, 3: 0.7, 4: 0.5, 5: 0.3, 6: 0.18, 7: 0.12, 8: 0.06, 9: 0.04, 10: 0.02}
+SPEED_TO_SEC_MAP = {1: 1.5, 2: 0.9, 3: 0.7, 4: 0.5, 5: 0.3, 6: 0.18, 7: 0.12, 8: 0.06, 9: 0.04, 10: 0.02, 11: 0.01, 12: 0.001, 13: 0.0001}
 
 
 # helper function that maps [1,10] speed values to ms delays
@@ -77,8 +77,8 @@ def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WI
     global svg_lines_string
     global pen_width
 
-    if initial_speed not in range(1, 11):
-        raise ValueError('initial_speed should be an integer in interval [1,10]')
+    if initial_speed not in range(1, 14):
+        raise ValueError('initial_speed should be an integer in interval [1,13]')
     timeout = _speedToSec(initial_speed)
     if not (isinstance(initial_window_size, tuple) and len(initial_window_size) == 2 and isinstance(
             initial_window_size[0], int) and isinstance(initial_window_size[1], int)):
@@ -141,21 +141,20 @@ def _moveToNewPosition(new_pos):
 
 # makes the turtle move forward by 'units' units
 def forward(units):
-    if not isinstance(units, int):
-        raise ValueError('units should be an integer')
-
     alpha = math.radians(turtle_degree)
     ending_point = (turtle_pos[0] + units * math.cos(alpha), turtle_pos[1] + units * math.sin(alpha))
 
     _moveToNewPosition(ending_point)
 
+def fd(units):
+    forward(units)
 
 # makes the turtle move backward by 'units' units
 def backward(units):
-    if not isinstance(units, int):
-        raise ValueError('units should be an integer')
     forward(-1 * units)
-
+	
+def bk(units):
+    forward(-1 * units)
 
 # makes the turtle move right by 'degrees' degrees (NOT radians)
 def right(degrees):
@@ -167,13 +166,17 @@ def right(degrees):
     turtle_degree = (turtle_degree + degrees) % 360
     _updateDrawing()
 
-
+def rt(degrees):
+    right(degrees)
+	
 # makes the turtle move right by 'degrees' degrees (NOT radians)
 def left(degrees):
     if not (isinstance(degrees, int) or isinstance(degrees, float)):
         raise ValueError('degrees should be a number')
     right(-1 * degrees)
-
+	
+def lt(degrees):
+    right(-1 * degrees)
 
 # raises the pen such that following turtle moves will not cause any drawings
 def penup():
@@ -182,7 +185,6 @@ def penup():
     is_pen_down = False
     # TODO: decide if we should put the timout after lifting the pen
     # _updateDrawing()
-
 
 # lowers the pen such that following turtle moves will now cause drawings
 def pendown():
@@ -197,8 +199,8 @@ def pendown():
 def speed(speed):
     global timeout
 
-    if speed not in range(1, 11):
-        raise ValueError('speed should be an integer in the interval [1,10]')
+    if speed not in range(1, 13):
+        raise ValueError('speed should be an integer in the interval [1,13]')
     timeout = _speedToSec(speed)
     # TODO: decide if we should put the timout after changing the speed
     # _updateDrawing()
@@ -206,8 +208,6 @@ def speed(speed):
 
 # move the turtle to a designated 'x' x-coordinate, y-coordinate stays the same
 def setx(x):
-    if not isinstance(x, int):
-        raise ValueError('new x position should be an integer')
     if not x >= 0:
         raise ValueError('new x position should be nonnegative')
     _moveToNewPosition((x, turtle_pos[1]))
@@ -215,21 +215,23 @@ def setx(x):
 
 # move the turtle to a designated 'y' y-coordinate, x-coordinate stays the same
 def sety(y):
-    if not isinstance(y, int):
-        raise ValueError('new y position should be an integer')
     if not y >= 0:
         raise ValueError('new y position should be nonnegative')
     _moveToNewPosition((turtle_pos[0], y))
 
+# retrieve the turtle's currrent 'x' x-coordinate
+def getx():
+    return(turtle_pos[0])
 
+
+# retrieve the turtle's currrent 'y' y-coordinate
+def gety():
+    return(turtle_pos[1])
+	
 # move the turtle to a designated 'x'-'y' coordinate
 def goto(x, y):
-    if not isinstance(x, int):
-        raise ValueError('new x position should be an integer')
     if not x >= 0:
         raise ValueError('new x position should be nonnegative')
-    if not isinstance(y, int):
-        raise ValueError('new y position should be an integer')
     if not y >= 0:
         raise ValueError('new y position should be nonnegative')
     _moveToNewPosition((x, y))
