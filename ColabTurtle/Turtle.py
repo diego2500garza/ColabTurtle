@@ -1,9 +1,12 @@
 from IPython.display import display, HTML
 import time
 import math
+from matplotlib import cm
 
 # Created at: 23rd October 2018
 #         by: Tolga Atam
+# Modified at: 5/21/2020
+#         by: Yijia Xiong
 
 # Module for drawing classic Turtle figures on Google Colab notebooks.
 # It uses html capabilites of IPython library to draw svg shapes inline.
@@ -19,6 +22,10 @@ DEFAULT_IS_PEN_DOWN = True
 DEFAULT_SVG_LINES_STRING = ""
 DEFAULT_PEN_WIDTH = 4
 VALID_COLORS = ('white', 'yellow', 'orange', 'red', 'green', 'blue', 'purple', 'grey', 'black')
+MAPPED_COLORS = None
+NUM_COLORS = 0
+COLOR_MAP = ('hsv','viridis','gray', 'spring', 'summer', 'autumn', 'winter', 'cool', 'hot', 'ocean',  'terrain', 'brg','gist_rainbow', 'rainbow', 'jet')
+
 SVG_TEMPLATE = """
       <svg width="{window_width}" height="{window_height}">
         <rect width="100%" height="100%" fill="{background_color}"/>
@@ -33,10 +40,10 @@ TURTLE_SVG_TEMPLATE = """
       </g>
     """
 
-SPEED_TO_SEC_MAP = {1: 1.5, 2: 0.9, 3: 0.7, 4: 0.5, 5: 0.3, 6: 0.18, 7: 0.12, 8: 0.06, 9: 0.04, 10: 0.02, 11: 0.01, 12: 0.001, 13: 0.0001}
+SPEED_TO_SEC_MAP = {1: 1.5, 2: 0.9, 3: 0.7, 4: 0.5, 5: 0.3, 6: 0.18, 7: 0.12, 8: 0.06, 9: 0.04, 10: 0.02}
 
 
-# helper function that maps [1,13] speed values to ms delays
+# helper function that maps [1,10] speed values to ms delays
 def _speedToSec(speed):
     return SPEED_TO_SEC_MAP[speed]
 
@@ -70,8 +77,8 @@ def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WI
     global svg_lines_string
     global pen_width
 
-    if initial_speed not in range(1, 14):
-        raise ValueError('initial_speed should be an integer in interval [1,13]')
+    if initial_speed not in range(1, 11):
+        raise ValueError('initial_speed should be an integer in interval [1,10]')
     timeout = _speedToSec(initial_speed)
     if not (isinstance(initial_window_size, tuple) and len(initial_window_size) == 2 and isinstance(
             initial_window_size[0], int) and isinstance(initial_window_size[1], int)):
@@ -89,7 +96,7 @@ def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WI
     svg_lines_string = DEFAULT_SVG_LINES_STRING
     pen_width = DEFAULT_PEN_WIDTH
 
-    drawing_window = display(HTML(_generateSvgDrawing()), display_id=True)
+    drawing_window = display(HTML(_genereateSvgDrawing()), display_id=True)
 
 
 # helper function for generating svg string of the turtle
@@ -104,7 +111,7 @@ def _generateTurtleSvgDrawing():
 
 
 # helper function for generating the whole svg string
-def _generateSvgDrawing():
+def _genereateSvgDrawing():
     return SVG_TEMPLATE.format(window_width=window_size[0], window_height=window_size[1],
                                background_color=background_color, lines=svg_lines_string,
                                turtle=_generateTurtleSvgDrawing())
@@ -115,7 +122,7 @@ def _updateDrawing():
     if drawing_window == None:
         raise AttributeError("Display has not been initialized yet. Call initializeTurtle() before using.")
     time.sleep(timeout)
-    drawing_window.update(HTML(_generateSvgDrawing()))
+    drawing_window.update(HTML(_genereateSvgDrawing()))
 
 
 # helper function for managing any kind of move to a given 'new_pos' and draw lines if pen is down
@@ -134,8 +141,8 @@ def _moveToNewPosition(new_pos):
 
 # makes the turtle move forward by 'units' units
 def forward(units):
-    if not (isinstance(units, int) or isinstance(units, float)):
-        raise ValueError('units should be int or float')
+    if not isinstance(units, int):
+        raise ValueError('units should be an integer')
 
     alpha = math.radians(turtle_degree)
     ending_point = (turtle_pos[0] + units * math.cos(alpha), turtle_pos[1] + units * math.sin(alpha))
@@ -158,17 +165,6 @@ def right(degrees):
         raise ValueError('degrees should be a number')
 
     turtle_degree = (turtle_degree + degrees) % 360
-    _updateDrawing()
-
-
-# makes the turtle face a given direction
-def face(degrees):
-    global turtle_degree
-
-    if not (isinstance(degrees, int) or isinstance(degrees, float)):
-        raise ValueError('degrees should be a number')
-
-    turtle_degree = degrees % 360
     _updateDrawing()
 
 
@@ -197,12 +193,12 @@ def pendown():
     # _updateDrawing()
 
 
-# update the speed of the moves, [1,13]
+# update the speed of the moves, [1,10]
 def speed(speed):
     global timeout
 
-    if speed not in range(1, 14):
-        raise ValueError('speed should be an integer in the interval [1,13]')
+    if speed not in range(1, 11):
+        raise ValueError('speed should be an integer in the interval [1,10]')
     timeout = _speedToSec(speed)
     # TODO: decide if we should put the timout after changing the speed
     # _updateDrawing()
@@ -224,15 +220,6 @@ def sety(y):
     if not y >= 0:
         raise ValueError('new y position should be nonnegative')
     _moveToNewPosition((turtle_pos[0], y))
-
-# retrieve the turtle's currrent 'x' x-coordinate
-def getx():
-    return(turtle_pos[0])
-
-
-# retrieve the turtle's currrent 'y' y-coordinate
-def gety():
-    return(turtle_pos[1])
 
 
 # move the turtle to a designated 'x'-'y' coordinate
@@ -278,12 +265,36 @@ def bgcolor(color):
 def color(color):
     global pen_color
 
-    if not color in VALID_COLORS:
-        raise ValueError('color value should be one of the following: ' + str(VALID_COLORS))
+    #if not color in VALID_COLORS:
+    #    raise ValueError('color value should be one of the following: ' + str(VALID_COLORS))
     pen_color = color
     _updateDrawing()
 
+def color_rgb(r,g,b,a=1):
+    global pen_color
+    pen_color = """rgb({r},{g},{b})""".format(r=r,g=g,b=b)
+    _updateDrawing()
 
+# select colormap
+def initializeColors(numColors=256,colormap="rainbow"):
+    global MAPPED_COLORS
+    global NUM_COLORS
+    if not colormap in COLOR_MAP:
+        raise ValueError('Colormap value should be one of the following: ' + str(COLOR_MAP))
+    if not (numColors >0 and numColors < 256):
+        raise ValueError('numColors should be an integer between 1 to 255')
+    MAPPED_COLORS=cm.get_cmap(colormap,numColors)   
+    NUM_COLORS = numColors
+	
+
+def setcolor(n=0):
+    global MAPPED_COLORS
+    global NUM_COLORS
+    if n >= NUM_COLORS or n < 0:
+        raise ValueError('color number should be in the range of 0 to the number of colors initialized - 1.')
+    r,g,b,alpha=MAPPED_COLORS(n)
+    color_rgb(r*255,g*255,b*255,alpha)  
+	
 # change the width of the lines drawn by the turtle, in pixels
 def width(width):
     global pen_width
