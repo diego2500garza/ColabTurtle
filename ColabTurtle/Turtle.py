@@ -161,7 +161,11 @@ def backward(units):
 def bk(units):
     forward(-1 * units)
 
-# makes the turtle move right by 'degrees' degrees (NOT radians)
+def facedirection():
+#    global turtle_degree
+    return turtle_degree
+
+# makes the turtle turn right by 'degrees' degrees (NOT radians)
 def right(degrees):
     global turtle_degree
 
@@ -170,6 +174,7 @@ def right(degrees):
 
     turtle_degree = (turtle_degree + degrees) % 360
     _updateDrawing()
+
 
 def rt(degrees):
     right(degrees)
@@ -273,8 +278,8 @@ def bgcolor(color):
 def color(color):
     global pen_color
 
-    #if not color in VALID_COLORS:
-    #    raise ValueError('color value should be one of the following: ' + str(VALID_COLORS))
+    if not color in VALID_COLORS:
+        raise ValueError('color value should be one of the following: ' + str(VALID_COLORS))
     pen_color = color
     _updateDrawing()
 
@@ -314,5 +319,7 @@ def width(width):
         raise ValueError('new width position should be positive')
 
     pen_width = width
-    # TODO: decide if we should put the timout after changing the speed
-    # _updateDrawing()
+    
+def getwidth():
+    global pen_width
+    return pen_width
