@@ -138,6 +138,11 @@ def _moveToNewPosition(new_pos):
     turtle_pos = new_pos
     _updateDrawing()
 
+def drawline(x1,y1,x2,y2):
+    global svg_lines_string
+    svg_lines_string += """<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke-linecap="round" style="stroke:{pen_color};stroke-width:{pen_width}"/>""".format(
+            x1=x1, y1=y1, x2=x2, y2=y2, pen_color=pen_color, pen_width=pen_width)
+    _updateDrawing()
 
 # makes the turtle move forward by 'units' units
 def forward(units):
@@ -152,7 +157,7 @@ def fd(units):
 # makes the turtle move backward by 'units' units
 def backward(units):
     forward(-1 * units)
-	
+
 def bk(units):
     forward(-1 * units)
 
@@ -168,13 +173,13 @@ def right(degrees):
 
 def rt(degrees):
     right(degrees)
-	
+
 # makes the turtle move right by 'degrees' degrees (NOT radians)
 def left(degrees):
     if not (isinstance(degrees, int) or isinstance(degrees, float)):
         raise ValueError('degrees should be a number')
     right(-1 * degrees)
-	
+
 def lt(degrees):
     right(-1 * degrees)
 
@@ -227,7 +232,8 @@ def getx():
 # retrieve the turtle's currrent 'y' y-coordinate
 def gety():
     return(turtle_pos[1])
-	
+
+
 # move the turtle to a designated 'x'-'y' coordinate
 def goto(x, y):
     if not x >= 0:
@@ -287,7 +293,7 @@ def initializeColors(numColors=256,colormap="rainbow"):
         raise ValueError('numColors should be an integer between 1 to 255')
     MAPPED_COLORS=cm.get_cmap(colormap,numColors)   
     NUM_COLORS = numColors
-	
+
 
 def setcolor(n=0):
     global MAPPED_COLORS
@@ -296,7 +302,8 @@ def setcolor(n=0):
         raise ValueError('color number should be in the range of 0 to the number of colors initialized - 1.')
     r,g,b,alpha=MAPPED_COLORS(n)
     color_rgb(r*255,g*255,b*255,alpha)  
-	
+
+    
 # change the width of the lines drawn by the turtle, in pixels
 def width(width):
     global pen_width
