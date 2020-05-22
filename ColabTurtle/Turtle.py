@@ -161,9 +161,16 @@ def backward(units):
 def bk(units):
     forward(-1 * units)
 
-def facedirection():
-#    global turtle_degree
+def getdirection():
     return turtle_degree
+
+def setdirection(degrees):
+    global turtle_degree
+    if not (isinstance(degrees, int) or isinstance(degrees, float)):
+        raise ValueError('degrees should be a number')
+
+    turtle_degree = degrees % 360
+    _updateDrawing()
 
 # makes the turtle turn right by 'degrees' degrees (NOT radians)
 def right(degrees):
@@ -321,5 +328,4 @@ def width(width):
     pen_width = width
     
 def getwidth():
-    global pen_width
     return pen_width
