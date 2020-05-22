@@ -74,8 +74,8 @@ And here is a classic turtle figure:
       
     hideturtle()
     width(1)
-    initializeColors(60,"rainbow") #set a palette of 60 colors with the rainbow colormap
-    for i in range(60):
+    initializeColors(61,"rainbow") #set a palette of 60 colors with the rainbow colormap
+    for i in range(61):
       setcolor(i)
       n = 5+ i* 5
       square(n)
