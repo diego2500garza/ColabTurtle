@@ -37,7 +37,7 @@ To use the gradient colors, a color palette need to be initialized first as this
 
     initializeColors(numColors, colormap)
     
-Then a call to setcolor(n) will set the pen color as the nth color in the palette. 
+Then a call to set_color(n) will set the pen color as the nth color in the palette. 
 
 Here is a simple code to demostrate the usage:
 
@@ -47,7 +47,7 @@ Here is a simple code to demostrate the usage:
     initializeColors(60,"rainbow") #set a palette of 60 colors with the rainbow colormap
     backward(100)
     for i in range(180):
-      setcolor(i%60)
+      set_color(i%60)
       forward(200)
       right(145)
 
@@ -77,7 +77,7 @@ And here is a classic turtle figure:
     width(1)
     initializeColors(61,"rainbow") #set a palette of 60 colors with the rainbow colormap
     for i in range(61):
-      setcolor(i)
+      set_color(i)
       n = 5+ i* 5
       square(n)
       right(3)
