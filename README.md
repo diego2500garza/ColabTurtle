@@ -29,7 +29,7 @@ From here you can play with the turtle functions: forward(distance), backward(di
 
     initializeTurtle()
     color("red")
-    for i in range(3)
+    for i in range(3):
       forward(100)
       right(120)
 
